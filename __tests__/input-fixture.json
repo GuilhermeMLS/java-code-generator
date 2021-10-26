@@ -1,0 +1,34 @@
+{
+  "Student": [
+    {
+      "name": "John Doe",
+      "cpf": "09998907809",
+      "phone": "+55 (41) 99567-1515",
+      "Class": [
+        {
+          "code": "CI1061",
+          "name": "Clean Architecture"
+        },
+        {
+          "code": "CI1057",
+          "name": "Test Driven Development"
+        }
+      ]
+    },
+    {
+      "name": "Maria",
+      "cpf": "08887898978",
+      "phone": "+55 (41) 99809-1716",
+      "Class": [
+        {
+          "code": "CI092",
+          "name": "Algorithms and Data Structures"
+        },
+        {
+          "code": "CI1056",
+          "name": "Operational Systems"
+        }
+      ]
+    }
+  ]
+}
