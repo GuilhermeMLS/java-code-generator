@@ -36,6 +36,10 @@ describe("Java Class Generator", () => {
               key: "age",
               type: "number",
             },
+            {
+              key: "professorList",
+              type: "ArrayList<Professor>",
+            },
           ],
         },
         {
@@ -75,21 +79,3 @@ describe("Java Class Generator", () => {
     });
   });
 });
-
-// const classExample = {
-//     name: "Student",
-//     attributes: [
-//         {
-//             key: "name",
-//             type: "string"
-//         },
-//         {
-//             key: "cpf",
-//             type: "number"
-//         },
-//         {
-//             key: "class",
-//             type: "ArrayList<Class>"
-//         },
-//     ]
-// }

@@ -22,12 +22,19 @@ const getEntities = (entityName, entities) => {
   const attributes = entities
     .map((entity) =>
       Object.keys(entity)
-        .filter((key) => isAttribute(key))
         .map((attributeName) => {
-          return {
-            key: attributeName,
-            type: typeof entity[attributeName],
-          };
+          if (isAttribute(attributeName)) {
+            return {
+              key: attributeName,
+              type: typeof entity[attributeName],
+            };
+          }
+          if (isEntity(attributeName)) {
+            return {
+              key: attributeName.toLowerCase() + "List",
+              type: `ArrayList<${attributeName}>`
+            }
+          }
         })
     )
     .flat()
@@ -67,6 +74,7 @@ const getJavaType = (type) => {
   if (type === 'string') {
     return 'String';
   }
+  return type;
 }
 
 const generateJavaClass = (entity) => {
