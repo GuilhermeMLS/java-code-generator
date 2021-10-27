@@ -14,7 +14,7 @@ const isAttribute = (key) => {
 
 const generateClasses = (input) => {
   return Object.keys(input)
-    .map((entityName) => getEntities(entityName, input[entityName]))
+    .map((entityName) => getClassesFromArrayOfEntities(entityName, input[entityName]))
     .flat();
 };
 
@@ -64,7 +64,13 @@ const makeAttributes = (entity) => {
 const makeEntities = (entity) => {
   return Object.keys(entity)
     .filter((key) => isEntity(key))
-    .map((entityName) => getEntities(entityName, entity[entityName]))
+    .map((entityName) => {
+      if (entity[entityName].length) {
+        return getClassesFromArrayOfEntities(entityName, entity[entityName]);
+      }
+      return getClassesFromEntity(entityName, entity[entityName]);
+      //getClasses(entityName, entity[entityName])
+    })
     .flat();
 };
 
@@ -126,7 +132,7 @@ const getClassesFromEntity = (entityName, entity) => {
   ];
 };
 
-const getEntities = (entityName, entities) => {
+const getClasses = (entityName, entities) => {
   if (entities.length) {
     return getClassesFromArrayOfEntities(entityName, entities);
   }
