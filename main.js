@@ -8,6 +8,7 @@ const main = () => {
   if (!fileName) {
     console.error("\x1b[31m%s\x1b[0m", "Error: invalid file name.");
     console.log("Usage: node main.js {file_name}.json.");
+    console.log("Test files: __tests__/input-fixture-2.json, __tests__/input-fixture.json");
     return;
   }
   const classGenerator = require("./class-generator");

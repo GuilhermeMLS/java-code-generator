@@ -2,28 +2,13 @@ import java.util.ArrayList;
 
 class Student {
     String name;
-    int age;
-    StudentAddress studentAddress;
-    ArrayList<string> friends;
-    ArrayList<Professor> professorList;
+    String cpf;
+    String phone;
+    ArrayList<Class> classList;
 }
 
-class StudentAddress {
-    String street;
-}
-
-class Professor {
-    String name;
-    ArrayList<Address> addressList;
-}
-
-class Address {
-    String street;
-    int number;
-    ArrayList<Reference> referenceList;
-}
-
-class Reference {
+class Class {
+    String code;
     String name;
 }
 
