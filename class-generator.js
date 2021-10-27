@@ -12,7 +12,7 @@ const isAttribute = (key) => {
   return !isUpperCase(firstChar);
 };
 
-const wrapper = (input) => {
+const generateClasses = (input) => {
   return Object.keys(input)
     .map((entityName) => getEntities(entityName, input[entityName]))
     .flat();
@@ -40,32 +40,34 @@ const getAttributeType = (entity, attributeName) => {
   return `ArrayList<${typeof entity[attributeName][0]}>`;
 };
 
+const getAttributes = (entity) => {
+  return Object.keys(entity).map((attributeName) => {
+    if (isAttribute(attributeName)) {
+      return {
+        key: attributeName,
+        type: getAttributeType(entity, attributeName),
+      };
+    }
+    if (isEntity(attributeName)) {
+      if (entity[attributeName].length) {
+        return {
+          key: attributeName.toLowerCase() + "List",
+          type: `ArrayList<${attributeName}>`,
+        };
+      } else {
+        return {
+          key: toPascalCase(attributeName),
+          type: attributeName,
+        };
+      }
+    }
+  });
+};
+
 const getEntities = (entityName, entities) => {
   if (entities.length) {
     const attributes = entities
-      .map((entity) =>
-        Object.keys(entity).map((attributeName) => {
-          if (isAttribute(attributeName)) {
-            return {
-              key: attributeName,
-              type: getAttributeType(entity, attributeName),
-            };
-          }
-          if (isEntity(attributeName)) {
-            if (entity[attributeName].length) {
-              return {
-                key: attributeName.toLowerCase() + "List",
-                type: `ArrayList<${attributeName}>`,
-              };
-            } else {
-              return {
-                key: toPascalCase(attributeName),
-                type: attributeName,
-              };
-            }
-          }
-        })
-      )
+      .map((entity) => getAttributes(entity))
       .flat()
       .reduce((prev, curr) => {
         if (prev.find((attribute) => attribute.key === curr.key)) {
@@ -99,28 +101,7 @@ const getEntities = (entityName, entities) => {
     ];
   } else {
     const entity = entities;
-    const attributes = Object.keys(entity)
-      .map((attributeName) => {
-        if (isAttribute(attributeName)) {
-          return {
-            key: attributeName,
-            type: getAttributeType(entity, attributeName),
-          };
-        }
-        if (isEntity(attributeName)) {
-          if (entity[attributeName].length) {
-            return {
-              key: attributeName.toLowerCase() + "List",
-              type: `ArrayList<${attributeName}>`,
-            };
-          } else {
-            return {
-              key: toPascalCase(attributeName),
-              type: attributeName,
-            };
-          }
-        }
-      })
+    const attributes = getAttributes(entity)
       .flat()
       .reduce((prev, curr) => {
         if (prev.find((attribute) => attribute.key === curr.key)) {
@@ -151,7 +132,6 @@ const getEntities = (entityName, entities) => {
   }
 };
 
-
 module.exports = {
-  wrapper,
+  generateClasses,
 };

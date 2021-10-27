@@ -1,6 +1,6 @@
 const main = () => {
   const classGenerator = require("./class-generator");
-  const entities = classGenerator.wrapper({
+  const entities = classGenerator.generateClasses({
     Student: [
       {
         name: "John Doe",
