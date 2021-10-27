@@ -12,14 +12,6 @@ const isAttribute = (key) => {
   return !isUpperCase(firstChar);
 };
 
-const generateClasses = (input) => {
-  return Object.keys(input)
-    .map((entityName) =>
-        getClassesFromEntities(entityName, input[entityName])
-    )
-    .flat();
-};
-
 const mergeEntities = (entity, entityToBeMerged) => {
   return {
     ...entity,
@@ -63,7 +55,7 @@ const makeAttributes = (entity) => {
   });
 };
 
-const makeEntities = (entity) => {
+const makeClasses = (entity) => {
   return Object.keys(entity)
     .filter((key) => isEntity(key))
     .map((entityName) => {
@@ -72,7 +64,7 @@ const makeEntities = (entity) => {
     .flat();
 };
 
-const removeDuplicatedEntities = (entities) => {
+const mergeDuplicatedEntities = (entities) => {
   return entities.reduce((prev, curr) => {
     const entity = prev.find((entity) => entity.name === curr.name);
     if (entity) {
@@ -96,12 +88,12 @@ const removeDuplicatedAttributes = (attributes) => {
 const getClassesFromEntities = (entityName, entities) => {
   const rawAttributes = entities.length
     ? entities.map((e) => makeAttributes(e)).flat()
-    : makeAttributes(entities).flat();
+    : makeAttributes(entities);
   const rawEntities = entities.length
-    ? entities.map((e) => makeEntities(e)).flat()
-    : makeEntities(entities);
+    ? entities.map((e) => makeClasses(e)).flat()
+    : makeClasses(entities);
   const attributes = removeDuplicatedAttributes(rawAttributes);
-  const subEntities = removeDuplicatedEntities(rawEntities);
+  const subEntities = mergeDuplicatedEntities(rawEntities);
   return [
     {
       name: entityName,
@@ -109,6 +101,14 @@ const getClassesFromEntities = (entityName, entities) => {
     },
     ...subEntities,
   ];
+};
+
+const generateClasses = (input) => {
+  return Object.keys(input)
+      .map((entityName) =>
+          getClassesFromEntities(entityName, input[entityName])
+      )
+      .flat();
 };
 
 module.exports = {
