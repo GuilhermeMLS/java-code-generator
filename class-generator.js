@@ -33,6 +33,13 @@ const toPascalCase = (string) => {
     .replace(/\s+/g, "");
 };
 
+const getAttributeType = (entity, attributeName) => {
+  if (!Array.isArray(entity[attributeName])) {
+    return typeof entity[attributeName];
+  }
+  return `ArrayList<${typeof entity[attributeName][0]}>`;
+}
+
 const getEntities = (entityName, entities) => {
   if (entities.length) {
     const attributes = entities
@@ -41,7 +48,7 @@ const getEntities = (entityName, entities) => {
           if (isAttribute(attributeName)) {
             return {
               key: attributeName,
-              type: typeof entity[attributeName],
+              type: getAttributeType(entity, attributeName),
             };
           }
           if (isEntity(attributeName)) {
@@ -97,7 +104,7 @@ const getEntities = (entityName, entities) => {
         if (isAttribute(attributeName)) {
           return {
             key: attributeName,
-            type: typeof entity[attributeName],
+            type: getAttributeType(entity, attributeName),
           };
         }
         if (isEntity(attributeName)) {

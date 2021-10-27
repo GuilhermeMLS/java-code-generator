@@ -10,6 +10,10 @@ describe("Java Class Generator", () => {
             StudentAddress: {
               street: "foo",
             },
+            friends: [
+                'Carl',
+                'Bob',
+            ],
             Professor: [
               {
                 name: "Dale",
@@ -35,6 +39,9 @@ describe("Java Class Generator", () => {
                 ],
               },
             ],
+            friends: [
+                'Mary'
+            ]
           },
         ],
       };
@@ -53,6 +60,10 @@ describe("Java Class Generator", () => {
             {
               key: "studentAddress",
               type: "StudentAddress",
+            },
+            {
+              key: "friends",
+              type: "ArrayList<string>",
             },
             {
               key: "professorList",
