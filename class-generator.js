@@ -40,7 +40,7 @@ const getAttributeType = (entity, attributeName) => {
   return `ArrayList<${typeof entity[attributeName][0]}>`;
 };
 
-const getAttributes = (entity) => {
+const makeAttributes = (entity) => {
   return Object.keys(entity).map((attributeName) => {
     if (isAttribute(attributeName)) {
       return {
@@ -61,72 +61,76 @@ const getAttributes = (entity) => {
   });
 };
 
+const makeEntities = (entity) => {
+  return Object.keys(entity)
+    .filter((key) => isEntity(key))
+    .map((entityName) => getEntities(entityName, entity[entityName]))
+    .flat();
+};
+
+const getClassesFromArrayOfEntities = (entityName, entities) => {
+  const attributes = entities
+    .map((entity) => makeAttributes(entity))
+    .flat()
+    .reduce((prev, curr) => {
+      if (prev.find((attribute) => attribute.key === curr.key)) {
+        return prev;
+      }
+      return [...prev, curr];
+    }, []);
+  const subEntities = entities
+    .map((entity) => makeEntities(entity))
+    .flat()
+    .reduce((prev, curr) => {
+      const entity = prev.find((entity) => entity.name === curr.name);
+      if (entity) {
+        const index = prev.indexOf(entity);
+        prev[index] = mergeEntities(entity, curr);
+        return prev;
+      }
+      return [...prev, curr];
+    }, []);
+  return [
+    {
+      name: entityName,
+      attributes,
+    },
+    ...subEntities,
+  ];
+};
+
+const getClassesFromEntity = (entityName, entity) => {
+  const attributes = makeAttributes(entity)
+    .flat()
+    .reduce((prev, curr) => {
+      if (prev.find((attribute) => attribute.key === curr.key)) {
+        return prev;
+      }
+      return [...prev, curr];
+    }, []);
+  const subEntities = makeEntities(entity).reduce((prev, curr) => {
+    const entity = prev.find((entity) => entity.name === curr.name);
+    if (entity) {
+      const index = prev.indexOf(entity);
+      prev[index] = mergeEntities(entity, curr);
+      return prev;
+    }
+    return [...prev, curr];
+  }, []);
+  return [
+    {
+      name: entityName,
+      attributes,
+    },
+    ...subEntities,
+  ];
+};
+
 const getEntities = (entityName, entities) => {
   if (entities.length) {
-    const attributes = entities
-      .map((entity) => getAttributes(entity))
-      .flat()
-      .reduce((prev, curr) => {
-        if (prev.find((attribute) => attribute.key === curr.key)) {
-          return prev;
-        }
-        return [...prev, curr];
-      }, []);
-    const subEntities = entities
-      .map((entity) => {
-        return Object.keys(entity)
-          .filter((key) => isEntity(key))
-          .map((entityName) => getEntities(entityName, entity[entityName]))
-          .flat();
-      })
-      .flat()
-      .reduce((prev, curr) => {
-        const entity = prev.find((entity) => entity.name === curr.name);
-        if (entity) {
-          const index = prev.indexOf(entity);
-          prev[index] = mergeEntities(entity, curr);
-          return prev;
-        }
-        return [...prev, curr];
-      }, []);
-    return [
-      {
-        name: entityName,
-        attributes,
-      },
-      ...subEntities,
-    ];
-  } else {
-    const entity = entities;
-    const attributes = getAttributes(entity)
-      .flat()
-      .reduce((prev, curr) => {
-        if (prev.find((attribute) => attribute.key === curr.key)) {
-          return prev;
-        }
-        return [...prev, curr];
-      }, []);
-    const subEntities = Object.keys(entity)
-      .filter((key) => isEntity(key))
-      .map((entityName) => getEntities(entityName, entity[entityName]))
-      .flat()
-      .reduce((prev, curr) => {
-        const entity = prev.find((entity) => entity.name === curr.name);
-        if (entity) {
-          const index = prev.indexOf(entity);
-          prev[index] = mergeEntities(entity, curr);
-          return prev;
-        }
-        return [...prev, curr];
-      }, []);
-    return [
-      {
-        name: entityName,
-        attributes,
-      },
-      ...subEntities,
-    ];
+    return getClassesFromArrayOfEntities(entityName, entities);
   }
+  return getClassesFromEntity(entityName, entities);
 };
 
 module.exports = {
