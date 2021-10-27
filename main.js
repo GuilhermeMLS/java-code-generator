@@ -5,6 +5,10 @@ const main = () => {
       {
         name: "John Doe",
         age: 24,
+        StudentAddress: {
+          street: "foo",
+        },
+        friends: ["Carl", "Bob"],
         Professor: [
           {
             name: "Dale",
@@ -30,6 +34,7 @@ const main = () => {
             ],
           },
         ],
+        friends: ["Mary"],
       },
     ],
   });
