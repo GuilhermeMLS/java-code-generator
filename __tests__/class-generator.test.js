@@ -1,5 +1,5 @@
 describe("Class Generator", () => {
-  const javaClassGenerator = require("../class-generator");
+  const classGenerator = require("../class-generator");
   describe("generateClasses", () => {
     it("should return an array of classes matching the given input", () => {
       const input = {
@@ -45,7 +45,7 @@ describe("Class Generator", () => {
           },
         ],
       };
-      expect(javaClassGenerator.generateClasses(input)).toStrictEqual([
+      expect(classGenerator.generateClasses(input)).toStrictEqual([
         {
           name: "Student",
           attributes: [
