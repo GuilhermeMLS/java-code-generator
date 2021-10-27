@@ -95,7 +95,26 @@ const generateJavaClass = (entity) => {
   return signature + attributes.join("") + end;
 };
 
+const hasArrayList = (entities) => {
+  return entities.reduce((prev, curr) => {
+    return [...prev, curr.attributes.some(attribute => attribute.type.substring(0, 9) === 'ArrayList')];
+  }, []).some(boolval => boolval === true);
+}
+
+const generateJavaCode = (entities) => {
+  const headers = hasArrayList(entities)
+      ? "import java.util.ArrayList;\n"
+      : "";
+  const classes = entities.map(entity => generateJavaClass(entity));
+  const javaBaseProgram = "\n"
+      + "class Program {\n"
+      + "    public static void main (String args[]) {\n"
+      + "}\n";
+  return headers + classes.join('') + javaBaseProgram;
+}
+
 module.exports = {
-  generateClass: generateJavaClass,
+  generateJavaCode,
+  generateJavaClass,
   wrapper,
 };

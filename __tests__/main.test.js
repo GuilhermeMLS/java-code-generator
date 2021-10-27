@@ -110,7 +110,7 @@ describe("Java Class Generator", () => {
           },
         ],
       };
-      expect(javaClassGenerator.generateClass(entity)).toStrictEqual(
+      expect(javaClassGenerator.generateJavaClass(entity)).toStrictEqual(
         "\n" +
           "class Student {\n" +
           "    String name;\n" +
