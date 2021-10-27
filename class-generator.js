@@ -60,7 +60,25 @@ const getEntities = (entityName, entities) => {
   ];
 };
 
+const getJavaType = (type) => {
+  if (type === 'number') {
+    return 'int';
+  }
+  if (type === 'string') {
+    return 'String';
+  }
+}
+
+const generateClass = (entity) => {
+  const signature = "\n" + "class " + entity.name + " {\n";
+  const attributes = entity.attributes.map(attribute => {
+    return "    " + getJavaType(attribute.type) + " " + attribute.key + ";\n"
+  });
+  const end = "}\n";
+  return signature + attributes.join('') + end;
+}
+
 module.exports = {
-  getEntities,
+  generateClass,
   wrapper,
 };
