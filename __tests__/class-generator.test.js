@@ -10,10 +10,7 @@ describe("Class Generator", () => {
             StudentAddress: {
               street: "foo",
             },
-            friends: [
-                'Carl',
-                'Bob',
-            ],
+            friends: ["Carl", "Bob"],
             Professor: [
               {
                 name: "Dale",
@@ -39,9 +36,7 @@ describe("Class Generator", () => {
                 ],
               },
             ],
-            friends: [
-                'Mary'
-            ]
+            friends: ["Mary"],
           },
         ],
       };

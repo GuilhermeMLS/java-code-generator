@@ -1,4 +1,4 @@
-const utils = require('./utils');
+const utils = require("./utils");
 
 const mergeEntities = (entity, entityToBeMerged) => {
   return {
@@ -85,10 +85,8 @@ const getClassesFromEntities = (entityName, entities) => {
 
 const generateClasses = (input) => {
   return Object.keys(input)
-      .map((entityName) =>
-          getClassesFromEntities(entityName, input[entityName])
-      )
-      .flat();
+    .map((entityName) => getClassesFromEntities(entityName, input[entityName]))
+    .flat();
 };
 
 module.exports = {
