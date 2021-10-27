@@ -35,7 +35,7 @@ const getJavaType = (type) => {
 const generateCode = (entities) => {
   const headers = hasArrayList(entities) ? `import java.util.ArrayList;\n\n` : ``;
   const classes = entities.map((entity) => generateJavaClass(entity)).join('');
-  return headers + classes + JAVA_BASE_PROGRAM;
+  return headers + classes + JAVA_BASE_PROGRAM + '\n';
 };
 
 module.exports = {
