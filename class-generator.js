@@ -21,14 +21,79 @@ const wrapper = (input) => {
 const mergeEntities = (entity, entityToBeMerged) => {
   return {
     ...entity,
-    ...entityToBeMerged
-  }
-}
+    ...entityToBeMerged,
+  };
+};
+
+const toPascalCase = (string) => {
+  return string
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    })
+    .replace(/\s+/g, "");
+};
 
 const getEntities = (entityName, entities) => {
-  const attributes = entities
-    .map((entity) =>
-      Object.keys(entity).map((attributeName) => {
+  if (entities.length) {
+    const attributes = entities
+      .map((entity) =>
+        Object.keys(entity).map((attributeName) => {
+          if (isAttribute(attributeName)) {
+            return {
+              key: attributeName,
+              type: typeof entity[attributeName],
+            };
+          }
+          if (isEntity(attributeName)) {
+            if (entity[attributeName].length) {
+              return {
+                key: attributeName.toLowerCase() + "List",
+                type: `ArrayList<${attributeName}>`,
+              };
+            } else {
+              return {
+                key: toPascalCase(attributeName),
+                type: attributeName,
+              };
+            }
+          }
+        })
+      )
+      .flat()
+      .reduce((prev, curr) => {
+        if (prev.find((attribute) => attribute.key === curr.key)) {
+          return prev;
+        }
+        return [...prev, curr];
+      }, []);
+    const subEntities = entities
+      .map((entity) => {
+        return Object.keys(entity)
+          .filter((key) => isEntity(key))
+          .map((entityName) => getEntities(entityName, entity[entityName]))
+          .flat();
+      })
+      .flat()
+      .reduce((prev, curr) => {
+        const entity = prev.find((entity) => entity.name === curr.name);
+        if (entity) {
+          const index = prev.indexOf(entity);
+          prev[index] = mergeEntities(entity, curr);
+          return prev;
+        }
+        return [...prev, curr];
+      }, []);
+    return [
+      {
+        name: entityName,
+        attributes,
+      },
+      ...subEntities,
+    ];
+  } else {
+    const entity = entities;
+    const attributes = Object.keys(entity)
+      .map((attributeName) => {
         if (isAttribute(attributeName)) {
           return {
             key: attributeName,
@@ -36,44 +101,47 @@ const getEntities = (entityName, entities) => {
           };
         }
         if (isEntity(attributeName)) {
-          return {
-            key: attributeName.toLowerCase() + "List",
-            type: `ArrayList<${attributeName}>`,
-          };
+          if (entity[attributeName].length) {
+            return {
+              key: attributeName.toLowerCase() + "List",
+              type: `ArrayList<${attributeName}>`,
+            };
+          } else {
+            return {
+              key: toPascalCase(attributeName),
+              type: attributeName,
+            };
+          }
         }
       })
-    )
-    .flat()
-    .reduce((prev, curr) => {
-      if (prev.find((attribute) => attribute.key === curr.key)) {
-        return prev;
-      }
-      return [...prev, curr];
-    }, []);
-  const subEntities = entities
-    .map((entity) => {
-      return Object.keys(entity)
-        .filter((key) => isEntity(key))
-        .map((entityName) => getEntities(entityName, entity[entityName]))
-        .flat();
-    })
-    .flat()
-    .reduce((prev, curr) => {
-      const entity = prev.find((entity) => entity.name === curr.name);
-      if (entity) {
-        const index = prev.indexOf(entity);
-        prev[index] = mergeEntities(entity, curr);
-        return prev;
-      }
-      return [...prev, curr];
-    }, []);
-  return [
-    {
-      name: entityName,
-      attributes,
-    },
-    ...subEntities,
-  ];
+      .flat()
+      .reduce((prev, curr) => {
+        if (prev.find((attribute) => attribute.key === curr.key)) {
+          return prev;
+        }
+        return [...prev, curr];
+      }, []);
+    const subEntities = Object.keys(entity)
+      .filter((key) => isEntity(key))
+      .map((entityName) => getEntities(entityName, entity[entityName]))
+      .flat()
+      .reduce((prev, curr) => {
+        const entity = prev.find((entity) => entity.name === curr.name);
+        if (entity) {
+          const index = prev.indexOf(entity);
+          prev[index] = mergeEntities(entity, curr);
+          return prev;
+        }
+        return [...prev, curr];
+      }, []);
+    return [
+      {
+        name: entityName,
+        attributes,
+      },
+      ...subEntities,
+    ];
+  }
 };
 
 const getJavaType = (type) => {
@@ -96,22 +164,28 @@ const generateJavaClass = (entity) => {
 };
 
 const hasArrayList = (entities) => {
-  return entities.reduce((prev, curr) => {
-    return [...prev, curr.attributes.some(attribute => attribute.type.substring(0, 9) === 'ArrayList')];
-  }, []).some(boolval => boolval === true);
-}
+  return entities
+    .reduce((prev, curr) => {
+      return [
+        ...prev,
+        curr.attributes.some(
+          (attribute) => attribute.type.substring(0, 9) === "ArrayList"
+        ),
+      ];
+    }, [])
+    .some((boolval) => boolval === true);
+};
 
 const generateJavaCode = (entities) => {
-  const headers = hasArrayList(entities)
-      ? "import java.util.ArrayList;\n"
-      : "";
-  const classes = entities.map(entity => generateJavaClass(entity));
-  const javaBaseProgram = "\n"
-      + "class Program {\n"
-      + "    public static void main (String args[]) {\n"
-      + "}\n";
-  return headers + classes.join('') + javaBaseProgram;
-}
+  const headers = hasArrayList(entities) ? "import java.util.ArrayList;\n" : "";
+  const classes = entities.map((entity) => generateJavaClass(entity));
+  const javaBaseProgram =
+    "\n" +
+    "class Program {\n" +
+    "    public static void main (String args[]) {\n" +
+    "}\n";
+  return headers + classes.join("") + javaBaseProgram;
+};
 
 module.exports = {
   generateJavaCode,

@@ -7,6 +7,9 @@ describe("Java Class Generator", () => {
           {
             name: "John Doe",
             age: 24,
+            StudentAddress: {
+              street: "foo",
+            },
             Professor: [
               {
                 name: "Dale",
@@ -48,8 +51,21 @@ describe("Java Class Generator", () => {
               type: "number",
             },
             {
+              key: "studentAddress",
+              type: "StudentAddress",
+            },
+            {
               key: "professorList",
               type: "ArrayList<Professor>",
+            },
+          ],
+        },
+        {
+          name: "StudentAddress",
+          attributes: [
+            {
+              key: "street",
+              type: "string",
             },
           ],
         },
