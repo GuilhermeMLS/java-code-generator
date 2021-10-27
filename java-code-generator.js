@@ -1,23 +1,25 @@
+const JAVA_PROGRAM_NAME = `Program`;
+const TAB = `    `;
+const JAVA_BASE_PROGRAM =
+    `class ${ JAVA_PROGRAM_NAME } {\n` +
+    `${ TAB }public static void main (String args[]) { }\n` +
+    `}\n`;
+
 const hasArrayList = (entities) => {
-  return entities
-    .reduce((prev, curr) => {
-      return [
-        ...prev,
-        curr.attributes.some(
-          (attribute) => attribute.type.substring(0, 9) === "ArrayList"
-        ),
-      ];
-    }, [])
-    .some((boolval) => boolval === true);
+  return !!entities.find((entity) =>
+    entity.attributes.some(
+      (attribute) => attribute.type.substring(0, 9) === "ArrayList"
+    )
+  );
 };
 
 const generateJavaClass = (entity) => {
-  const signature = "\n" + "class " + entity.name + " {\n";
+  const signature = `class ${ entity.name } {\n`;
   const attributes = entity.attributes.map((attribute) => {
-    return "    " + getJavaType(attribute.type) + " " + attribute.key + ";\n";
-  });
-  const end = "}\n";
-  return signature + attributes.join("") + end;
+    return `${ TAB }${ getJavaType(attribute.type) } ${ attribute.key };\n`;
+  }).join('');
+  const end = `}\n\n`;
+  return signature + attributes + end;
 };
 
 const getJavaType = (type) => {
@@ -31,14 +33,9 @@ const getJavaType = (type) => {
 };
 
 const generateCode = (entities) => {
-  const headers = hasArrayList(entities) ? "import java.util.ArrayList;\n" : "";
-  const classes = entities.map((entity) => generateJavaClass(entity));
-  const javaBaseProgram =
-    "\n" +
-    "class Program {\n" +
-    "    public static void main (String args[]) { }\n" +
-    "}\n";
-  return headers + classes.join("") + javaBaseProgram;
+  const headers = hasArrayList(entities) ? `import java.util.ArrayList;\n\n` : ``;
+  const classes = entities.map((entity) => generateJavaClass(entity)).join('');
+  return headers + classes + JAVA_BASE_PROGRAM;
 };
 
 module.exports = {
