@@ -19,6 +19,12 @@ describe("Java Class Generator", () => {
             Professor: [
               {
                 name: "Danny",
+                Address: [
+                  {
+                    street: "5th Avenue",
+                    number: 778
+                  }
+                ]
               },
             ],
           },
@@ -49,8 +55,25 @@ describe("Java Class Generator", () => {
               key: "name",
               type: "string",
             },
+            {
+              key: "addressList",
+              type: "ArrayList<Address>",
+            },
           ],
         },
+        {
+          name: "Address",
+          attributes: [
+            {
+              key: "street",
+              type: "string"
+            },
+            {
+              key: "number",
+              type: "number"
+            },
+          ]
+        }
       ]);
     });
   });

@@ -18,24 +18,30 @@ const wrapper = (input) => {
     .flat();
 };
 
+const mergeEntities = (entity, entityToBeMerged) => {
+  return {
+    ...entity,
+    ...entityToBeMerged
+  }
+}
+
 const getEntities = (entityName, entities) => {
   const attributes = entities
     .map((entity) =>
-      Object.keys(entity)
-        .map((attributeName) => {
-          if (isAttribute(attributeName)) {
-            return {
-              key: attributeName,
-              type: typeof entity[attributeName],
-            };
-          }
-          if (isEntity(attributeName)) {
-            return {
-              key: attributeName.toLowerCase() + "List",
-              type: `ArrayList<${attributeName}>`
-            }
-          }
-        })
+      Object.keys(entity).map((attributeName) => {
+        if (isAttribute(attributeName)) {
+          return {
+            key: attributeName,
+            type: typeof entity[attributeName],
+          };
+        }
+        if (isEntity(attributeName)) {
+          return {
+            key: attributeName.toLowerCase() + "List",
+            type: `ArrayList<${attributeName}>`,
+          };
+        }
+      })
     )
     .flat()
     .reduce((prev, curr) => {
@@ -53,7 +59,10 @@ const getEntities = (entityName, entities) => {
     })
     .flat()
     .reduce((prev, curr) => {
-      if (prev.find((entity) => entity.name === curr.name)) {
+      const entity = prev.find((entity) => entity.name === curr.name);
+      if (entity) {
+        const index = prev.indexOf(entity);
+        prev[index] = mergeEntities(entity, curr);
         return prev;
       }
       return [...prev, curr];
@@ -68,23 +77,23 @@ const getEntities = (entityName, entities) => {
 };
 
 const getJavaType = (type) => {
-  if (type === 'number') {
-    return 'int';
+  if (type === "number") {
+    return "int";
   }
-  if (type === 'string') {
-    return 'String';
+  if (type === "string") {
+    return "String";
   }
   return type;
-}
+};
 
 const generateJavaClass = (entity) => {
   const signature = "\n" + "class " + entity.name + " {\n";
-  const attributes = entity.attributes.map(attribute => {
-    return "    " + getJavaType(attribute.type) + " " + attribute.key + ";\n"
+  const attributes = entity.attributes.map((attribute) => {
+    return "    " + getJavaType(attribute.type) + " " + attribute.key + ";\n";
   });
   const end = "}\n";
-  return signature + attributes.join('') + end;
-}
+  return signature + attributes.join("") + end;
+};
 
 module.exports = {
   generateClass: generateJavaClass,
