@@ -1,30 +1,10 @@
-const isUpperCase = (char) => {
-  return char === char.toUpperCase();
-};
-
-const isEntity = (key) => {
-  const firstChar = key.substring(0, 1);
-  return isUpperCase(firstChar);
-};
-
-const isAttribute = (key) => {
-  const firstChar = key.substring(0, 1);
-  return !isUpperCase(firstChar);
-};
+const utils = require('./utils');
 
 const mergeEntities = (entity, entityToBeMerged) => {
   return {
     ...entity,
     ...entityToBeMerged,
   };
-};
-
-const toPascalCase = (string) => {
-  return string
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
-      return index === 0 ? word.toLowerCase() : word.toUpperCase();
-    })
-    .replace(/\s+/g, "");
 };
 
 const getAttributeType = (entity, attributeName) => {
@@ -36,20 +16,20 @@ const getAttributeType = (entity, attributeName) => {
 
 const makeAttributes = (entity) => {
   return Object.keys(entity).map((attributeName) => {
-    if (isAttribute(attributeName)) {
+    if (utils.isAttribute(attributeName)) {
       return {
         key: attributeName,
         type: getAttributeType(entity, attributeName),
       };
     }
-    if (isEntity(attributeName) && entity[attributeName].length) {
+    if (utils.isEntity(attributeName) && entity[attributeName].length) {
       return {
         key: attributeName.toLowerCase() + "List",
         type: `ArrayList<${attributeName}>`,
       };
     }
     return {
-      key: toPascalCase(attributeName),
+      key: utils.toPascalCase(attributeName),
       type: attributeName,
     };
   });
@@ -57,7 +37,7 @@ const makeAttributes = (entity) => {
 
 const makeClasses = (entity) => {
   return Object.keys(entity)
-    .filter((key) => isEntity(key))
+    .filter((key) => utils.isEntity(key))
     .map((entityName) => {
       return getClassesFromEntities(entityName, entity[entityName]);
     })
