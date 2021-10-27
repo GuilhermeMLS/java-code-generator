@@ -6,8 +6,8 @@ const generateJavaFile = (programName, javaCode) => {
 const main = () => {
   const fileName = process.argv[2];
   if (!fileName) {
-    console.error('\x1b[31m%s\x1b[0m','Error: invalid file name.');
-    console.log('Usage: node main.js {file_name}.json.');
+    console.error("\x1b[31m%s\x1b[0m", "Error: invalid file name.");
+    console.log("Usage: node main.js {file_name}.json.");
     return;
   }
   const classGenerator = require("./class-generator");
@@ -16,10 +16,10 @@ const main = () => {
   const entities = classGenerator.generateClasses(input);
   const javaCode = javaCodeGenerator.generateCode(entities);
   const utils = require("./utils");
-  console.log(javaCode);
-  generateJavaFile(
-    `${utils.toCamelCase(javaCodeGenerator.JAVA_PROGRAM_NAME)}.java`,
-    javaCode
-  );
+  const javaFileName = `${utils.toCamelCase(
+    javaCodeGenerator.JAVA_PROGRAM_NAME
+  )}.java`;
+  generateJavaFile(javaFileName, javaCode);
+  console.log(`File generated: ${javaFileName}`);
 };
 main();
