@@ -26,7 +26,8 @@ describe("Java Code Generator", () => {
           "    String name;\n" +
           "    int age;\n" +
           "}\n\n" +
-          JAVA_BASE_PROGRAM
+          JAVA_BASE_PROGRAM +
+          "\n"
       );
     });
   });
