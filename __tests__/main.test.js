@@ -22,9 +22,14 @@ describe("Java Class Generator", () => {
                 Address: [
                   {
                     street: "5th Avenue",
-                    number: 778
-                  }
-                ]
+                    number: 778,
+                    Reference: [
+                      {
+                        name: "foo",
+                      },
+                    ],
+                  },
+                ],
               },
             ],
           },
@@ -66,19 +71,32 @@ describe("Java Class Generator", () => {
           attributes: [
             {
               key: "street",
-              type: "string"
+              type: "string",
             },
             {
               key: "number",
-              type: "number"
+              type: "number",
             },
-          ]
-        }
+            {
+              key: "referenceList",
+              type: "ArrayList<Reference>",
+            },
+          ],
+        },
+        {
+          name: "Reference",
+          attributes: [
+            {
+              key: "name",
+              type: "string",
+            },
+          ],
+        },
       ]);
     });
   });
-  describe('generateJavaClass', () => {
-    it('should return a string matching the correct Java syntax to the given entity', () => {
+  describe("generateJavaClass", () => {
+    it("should return a string matching the correct Java syntax to the given entity", () => {
       const entity = {
         name: "Student",
         attributes: [
@@ -91,13 +109,13 @@ describe("Java Class Generator", () => {
             type: "number",
           },
         ],
-      }
+      };
       expect(javaClassGenerator.generateClass(entity)).toStrictEqual(
-        "\n"
-          + "class Student {\n"
-          + "    String name;\n"
-          + "    int age;\n"
-          + "}\n"
+        "\n" +
+          "class Student {\n" +
+          "    String name;\n" +
+          "    int age;\n" +
+          "}\n"
       );
     });
   });
