@@ -1,4 +1,4 @@
-describe("Java Class Generator", () => {
+describe("Class Generator", () => {
   const javaClassGenerator = require("../class-generator");
   describe("wrapper", () => {
     it("should return an array of classes matching the given input", () => {
@@ -120,30 +120,6 @@ describe("Java Class Generator", () => {
           ],
         },
       ]);
-    });
-  });
-  describe("generateJavaClass", () => {
-    it("should return a string matching the correct Java syntax to the given entity", () => {
-      const entity = {
-        name: "Student",
-        attributes: [
-          {
-            key: "name",
-            type: "string",
-          },
-          {
-            key: "age",
-            type: "number",
-          },
-        ],
-      };
-      expect(javaClassGenerator.generateJavaClass(entity)).toStrictEqual(
-        "\n" +
-          "class Student {\n" +
-          "    String name;\n" +
-          "    int age;\n" +
-          "}\n"
-      );
     });
   });
 });
