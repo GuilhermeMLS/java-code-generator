@@ -1,6 +1,6 @@
 const main = () => {
-  const javaClassGenerator = require("./class-generator");
-  const entities = javaClassGenerator.wrapper({
+  const classGenerator = require("./class-generator");
+  const entities = classGenerator.wrapper({
     Student: [
       {
         name: "John Doe",
@@ -38,7 +38,8 @@ const main = () => {
       },
     ],
   });
-  const javaCode = javaClassGenerator.generateJavaCode(entities);
+  const javaCodeGenerator = require("./java-code-generator");
+  const javaCode = javaCodeGenerator.generateCode(entities);
   console.log(javaCode);
 };
 main();
