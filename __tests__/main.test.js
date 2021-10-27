@@ -50,7 +50,7 @@ describe("Java Class Generator", () => {
       ]);
     });
   });
-  describe('generateClass', () => {
+  describe('generateJavaClass', () => {
     it('should return a string matching the correct Java syntax to the given entity', () => {
       const entity = {
         name: "Student",

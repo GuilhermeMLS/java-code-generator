@@ -69,7 +69,7 @@ const getJavaType = (type) => {
   }
 }
 
-const generateClass = (entity) => {
+const generateJavaClass = (entity) => {
   const signature = "\n" + "class " + entity.name + " {\n";
   const attributes = entity.attributes.map(attribute => {
     return "    " + getJavaType(attribute.type) + " " + attribute.key + ";\n"
@@ -79,6 +79,6 @@ const generateClass = (entity) => {
 }
 
 module.exports = {
-  generateClass,
+  generateClass: generateJavaClass,
   wrapper,
 };
