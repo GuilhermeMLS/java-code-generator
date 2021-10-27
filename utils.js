@@ -12,7 +12,7 @@ const isAttribute = (key) => {
   return !isUpperCase(firstChar);
 };
 
-const toPascalCase = (string) => {
+const toCamelCase = (string) => {
   return string
     .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
       return index === 0 ? word.toLowerCase() : word.toUpperCase();
@@ -24,5 +24,5 @@ module.exports = {
   isUpperCase,
   isEntity,
   isAttribute,
-  toPascalCase,
+  toCamelCase,
 };

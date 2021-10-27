@@ -29,7 +29,7 @@ const makeAttributes = (entity) => {
       };
     }
     return {
-      key: utils.toPascalCase(attributeName),
+      key: utils.toCamelCase(attributeName),
       type: attributeName,
     };
   });

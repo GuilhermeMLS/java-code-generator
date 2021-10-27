@@ -40,4 +40,5 @@ const generateCode = (entities) => {
 
 module.exports = {
   generateCode,
+  JAVA_PROGRAM_NAME
 };
