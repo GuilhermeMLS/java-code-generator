@@ -14,7 +14,9 @@ const isAttribute = (key) => {
 
 const generateClasses = (input) => {
   return Object.keys(input)
-    .map((entityName) => getClassesFromArrayOfEntities(entityName, input[entityName]))
+    .map((entityName) =>
+        getClassesFromEntities(entityName, input[entityName])
+    )
     .flat();
 };
 
@@ -65,56 +67,13 @@ const makeEntities = (entity) => {
   return Object.keys(entity)
     .filter((key) => isEntity(key))
     .map((entityName) => {
-      if (entity[entityName].length) {
-        return getClassesFromArrayOfEntities(entityName, entity[entityName]);
-      }
-      return getClassesFromEntity(entityName, entity[entityName]);
-      //getClasses(entityName, entity[entityName])
+      return getClassesFromEntities(entityName, entity[entityName]);
     })
     .flat();
 };
 
-const getClassesFromArrayOfEntities = (entityName, entities) => {
-  const attributes = entities
-    .map((entity) => makeAttributes(entity))
-    .flat()
-    .reduce((prev, curr) => {
-      if (prev.find((attribute) => attribute.key === curr.key)) {
-        return prev;
-      }
-      return [...prev, curr];
-    }, []);
-  const subEntities = entities
-    .map((entity) => makeEntities(entity))
-    .flat()
-    .reduce((prev, curr) => {
-      const entity = prev.find((entity) => entity.name === curr.name);
-      if (entity) {
-        const index = prev.indexOf(entity);
-        prev[index] = mergeEntities(entity, curr);
-        return prev;
-      }
-      return [...prev, curr];
-    }, []);
-  return [
-    {
-      name: entityName,
-      attributes,
-    },
-    ...subEntities,
-  ];
-};
-
-const getClassesFromEntity = (entityName, entity) => {
-  const attributes = makeAttributes(entity)
-    .flat()
-    .reduce((prev, curr) => {
-      if (prev.find((attribute) => attribute.key === curr.key)) {
-        return prev;
-      }
-      return [...prev, curr];
-    }, []);
-  const subEntities = makeEntities(entity).reduce((prev, curr) => {
+const removeDuplicatedEntities = (entities) => {
+  return entities.reduce((prev, curr) => {
     const entity = prev.find((entity) => entity.name === curr.name);
     if (entity) {
       const index = prev.indexOf(entity);
@@ -123,6 +82,26 @@ const getClassesFromEntity = (entityName, entity) => {
     }
     return [...prev, curr];
   }, []);
+};
+
+const removeDuplicatedAttributes = (attributes) => {
+  return attributes.reduce((prev, curr) => {
+    if (prev.find((attribute) => attribute.key === curr.key)) {
+      return prev;
+    }
+    return [...prev, curr];
+  }, []);
+};
+
+const getClassesFromEntities = (entityName, entities) => {
+  const rawAttributes = entities.length
+    ? entities.map((e) => makeAttributes(e)).flat()
+    : makeAttributes(entities).flat();
+  const rawEntities = entities.length
+    ? entities.map((e) => makeEntities(e)).flat()
+    : makeEntities(entities);
+  const attributes = removeDuplicatedAttributes(rawAttributes);
+  const subEntities = removeDuplicatedEntities(rawEntities);
   return [
     {
       name: entityName,
@@ -130,13 +109,6 @@ const getClassesFromEntity = (entityName, entity) => {
     },
     ...subEntities,
   ];
-};
-
-const getClasses = (entityName, entities) => {
-  if (entities.length) {
-    return getClassesFromArrayOfEntities(entityName, entities);
-  }
-  return getClassesFromEntity(entityName, entities);
 };
 
 module.exports = {
