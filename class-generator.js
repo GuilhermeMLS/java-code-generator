@@ -48,19 +48,16 @@ const getAttributes = (entity) => {
         type: getAttributeType(entity, attributeName),
       };
     }
-    if (isEntity(attributeName)) {
-      if (entity[attributeName].length) {
-        return {
-          key: attributeName.toLowerCase() + "List",
-          type: `ArrayList<${attributeName}>`,
-        };
-      } else {
-        return {
-          key: toPascalCase(attributeName),
-          type: attributeName,
-        };
-      }
+    if (isEntity(attributeName) && entity[attributeName].length) {
+      return {
+        key: attributeName.toLowerCase() + "List",
+        type: `ArrayList<${attributeName}>`,
+      };
     }
+    return {
+      key: toPascalCase(attributeName),
+      type: attributeName,
+    };
   });
 };
 
